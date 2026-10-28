@@ -1,3 +1,5 @@
+**Apple builds:** see [iOS XCFramework and SPM instructions](apple/README.md). Supports arm64 device and arm64/x86_64 Simulator; product **CAres**.
+
 # [![c-ares logo](https://c-ares.org/art/c-ares-logo.svg)](https://c-ares.org/)
 
 [![Build Status](https://github.com/c-ares/c-ares/actions/workflows/ubuntu-latest.yml/badge.svg?branch=main)](https://github.com/c-ares/c-ares/actions/workflows/ubuntu-latest.yml)

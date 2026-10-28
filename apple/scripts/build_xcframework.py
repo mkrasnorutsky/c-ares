@@ -20,6 +20,7 @@ def main():
     out=ROOT/'dist';out.mkdir(exist_ok=True);staging=out/'staging'
     if staging.exists():shutil.rmtree(staging)
     staging.mkdir();universal=staging/'libcares.a'
+    assert (built['simulator-arm64']/'include/ares_build.h').read_bytes()==(built['simulator-x86_64']/'include/ares_build.h').read_bytes(), 'Simulator ABI headers differ; add per-architecture header selection before combining slices'
     run('lipo','-create',built['simulator-arm64']/'lib/libcares.a',built['simulator-x86_64']/'lib/libcares.a','-output',universal)
     artifact=out/'CAres.xcframework'
     if artifact.exists():shutil.rmtree(artifact)
