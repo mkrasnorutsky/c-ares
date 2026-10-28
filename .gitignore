@@ -68,3 +68,11 @@ Makefile.inc.cmake
 cmake_install.cmake
 aminclude_static.am
 src/lib/*/.dirstamp
+
+# Apple builds, validation and SPM artifacts
+/out/
+/dist/
+/.build/
+/.swiftpm/
+/Package.resolved
+.DS_Store
