@@ -3,7 +3,7 @@
 from pathlib import Path
 import plistlib,subprocess,tempfile
 from build_xcframework import ROOT,configure
-artifact=ROOT/'dist/CAres.xcframework';info=plistlib.loads((artifact/'Info.plist').read_bytes());assert len(info['AvailableLibraries'])==2
+artifact=WORK/'dist/CAres.xcframework';info=plistlib.loads((artifact/'Info.plist').read_bytes());assert len(info['AvailableLibraries'])==2
 for entry in info['AvailableLibraries']:
     sim=entry.get('SupportedPlatformVariant')=='simulator'
     assert entry['SupportedPlatform']=='ios'
@@ -16,6 +16,8 @@ for entry in info['AvailableLibraries']:
         with tempfile.TemporaryDirectory(prefix='cares-client-') as directory:
             subprocess.run(['xcrun','clang','-target',triple,'-isysroot',sdk,'-DCARES_STATICLIB','-fmodules','-fmodules-cache-path='+directory+'/modules','-I'+str(headers),str(ROOT/'apple/scripts/dns_smoke.c'),str(archive),'-lresolv','-o',directory+'/client'],check=True)
 print('PASS: APIs link on arm64 device and arm64/x86_64 Simulator',flush=True)
-build=ROOT/'out/native-validation';prefix=build/'install';configure(build,prefix)
+build=WORK/'out/native-validation';prefix=build/'install';configure(build,prefix)
 subprocess.run(['xcrun','clang','-DCARES_STATICLIB','-I'+str(prefix/'include'),str(ROOT/'apple/scripts/dns_smoke.c'),str(prefix/'lib/libcares.a'),'-lresolv','-o',str(build/'dns_smoke')],check=True)
 subprocess.run([str(build/'dns_smoke')],check=True)
+import os
+WORK=Path(os.environ.get("APPLE_BUILD_ROOT", str(ROOT))).expanduser().resolve()

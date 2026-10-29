@@ -32,3 +32,7 @@ python3 apple/scripts/package_release.py --tag 0.2.0
 ```
 
 Upload the generated ZIP and checksums to the matching GitHub release, then commit `dist/Package.swift` as the root manifest at the release revision. Published archive contents and checksums remain immutable. Original `LICENSE.md` and `LICENSES` notices are retained in the repository and XCFramework.
+
+## Xcode header layout (0.1.1)
+
+Binary module maps live under a module-specific header subdirectory, avoiding duplicate `include/module.modulemap` outputs when Xcode processes several static XCFrameworks together. The library bytes and public include paths are unchanged. Set `APPLE_BUILD_ROOT` to keep `out/` and `dist/` outside the checkout.

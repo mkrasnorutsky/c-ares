@@ -3,6 +3,8 @@
 from pathlib import Path
 import argparse,json,shutil,subprocess
 ROOT=Path(__file__).resolve().parents[2]
+import os
+WORK=Path(os.environ.get("APPLE_BUILD_ROOT", str(ROOT))).expanduser().resolve()
 OPTIONS=['-DCARES_STATIC=ON','-DCARES_SHARED=OFF','-DCARES_INSTALL=ON','-DCARES_BUILD_TESTS=OFF','-DCARES_BUILD_CONTAINER_TESTS=OFF','-DCARES_BUILD_TOOLS=OFF','-DCARES_THREADS=ON']
 def run(*args):
     print('+',' '.join(map(str,args)),flush=True);return subprocess.run(list(map(str,args)),check=True)
@@ -16,8 +18,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--jobs',type=int,default=6);a=p.parse_args();built={}
     configurations=[('ios-arm64','iphoneos','arm64'),('simulator-arm64','iphonesimulator','arm64'),('simulator-x86_64','iphonesimulator','x86_64')]
     for label,sdk,arch in configurations:
-        build=ROOT/'out/apple'/label;prefix=build/'install';configure(build,prefix,sdk,arch,a.jobs);built[label]=prefix
-    out=ROOT/'dist';out.mkdir(exist_ok=True);staging=out/'staging'
+        build=WORK/'out/apple'/label;prefix=build/'install';configure(build,prefix,sdk,arch,a.jobs);built[label]=prefix
+    out=WORK/'dist';out.mkdir(exist_ok=True);staging=out/'staging'
     if staging.exists():shutil.rmtree(staging)
     staging.mkdir();universal=staging/'libcares.a'
     assert (built['simulator-arm64']/'include/ares_build.h').read_bytes()==(built['simulator-x86_64']/'include/ares_build.h').read_bytes(), 'Simulator ABI headers differ; add per-architecture header selection before combining slices'
@@ -29,7 +31,8 @@ def main():
     # Use the actual device header set for device and Simulator's header set for Simulator.
     for label,archive in [('ios-arm64',built['ios-arm64']/'lib/libcares.a'),('simulator-arm64',universal)]:
         headers=staging/label/'Headers';shutil.copytree(built[label]/'include',headers)
-        (headers/'module.modulemap').write_text('module CCAres {\n header "ares.h"\n export *\n}\n')
+        (headers/'CCAres').mkdir(exist_ok=True)
+        (headers/'CCAres/module.modulemap').write_text('module CCAres {\n header "../ares.h"\n export *\n}\n')
         command+=['-library',str(archive),'-headers',str(headers)]
     command+=['-output',str(artifact)];run(*command)
     notices=artifact/'Licenses';notices.mkdir();shutil.copy2(ROOT/'LICENSE.md',notices/'LICENSE.md')
