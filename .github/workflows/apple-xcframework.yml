@@ -7,12 +7,12 @@ jobs:
   build:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build arm64 device and arm64 + x86_64 Simulator
         run: python3 apple/scripts/build_xcframework.py --jobs 3
       - name: Link all targets and validate native offline DNS processing
         run: python3 apple/scripts/validate_xcframework.py
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: CAres-iOS-XCFramework
           path: |
