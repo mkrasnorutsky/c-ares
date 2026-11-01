@@ -25,7 +25,7 @@ jobs:
       checks: read
     steps:
       - name: Wait for all checks to pass or be skipped
-        uses: poseidon/wait-for-status-checks@10263d38af7ccc4c8499a74a268f740f2e5c73b5  # v0.6.0 + #627
+        uses: poseidon/wait-for-status-checks@c2eff86ce1e6c8fd8b2c4b360662c6d6f0da190e  # v0.6.0 + #627
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           # Ignore:
